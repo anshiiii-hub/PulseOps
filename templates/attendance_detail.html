@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ tracker.name }} — TrackIQ-AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include "_header.html" %}
+
+  <main class="wrap">
+    <div style="margin: 24px 0 4px;"><a href="{{ url_for('attendance_dashboard') }}" class="btn-secondary">← All attendance trackers</a></div>
+
+    <section style="padding: 20px 0 10px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <h1 style="font-family:var(--font-display); font-size:30px; font-weight:800; margin:0;">🧑‍🎓 {{ tracker.name }}</h1>
+          <span class="ai-header-badge">AI Predictive Mode</span>
+        </div>
+        <p style="color:var(--ink-soft); margin:0;">{{ tracker.members|length }} members · Minimum threshold: {{ tracker.threshold_pct }}% · Predictive Risk Classifier active</p>
+      </div>
+      <span class="live-pill" id="live-pill"><span class="live-dot"></span> Live AI Telemetry · <span id="checked-at">synced</span></span>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:16px;">✅ {{ msg }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+
+    <!-- AI Behavioral & Risk Mission Control Card -->
+    <div class="card ai-card animate" style="margin-top: 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h2 style="font-size:18px; margin:0 0 4px; display:flex; align-items:center; gap:8px;">
+            <span>🧠</span> Predictive Risk &amp; Behavioral Intelligence
+          </h2>
+          <p class="sub" style="margin:0;">Multi-factor disengagement scoring, day-of-week pattern mining, and tomorrow's forecast.</p>
+        </div>
+        <span class="status-pill {{ 'warning' if ai_report.critical_members_count > 0 else 'healthy' }}">
+          {{ ai_report.critical_members_count }} Member(s) Requiring Attention
+        </span>
+      </div>
+
+      <div class="ai-kpi-grid">
+        <div class="ai-kpi">
+          <span class="label">Tomorrow's Forecast ({{ ai_report.tomorrow_day_name }})</span>
+          <span class="val {{ 'ok' if ai_report.forecast_pct >= 75 else 'warn' }}">
+            {{ ai_report.forecast_pct }}%
+          </span>
+          <span class="sub">90% CI: [{{ ai_report.ci_low }}% – {{ ai_report.ci_high }}%]</span>
+        </div>
+        <div class="ai-kpi">
+          <span class="label">High / Critical Risk</span>
+          <span class="val {{ 'crit' if ai_report.critical_members_count > 0 else 'ok' }}">
+            {{ ai_report.critical_members_count }}
+          </span>
+          <span class="sub">Imminent threshold breach</span>
+        </div>
+        <div class="ai-kpi">
+          <span class="label">Cohort Grand Mean</span>
+          <span class="val">{{ ai_report.cohort_avg_pct }}%</span>
+          <span class="sub">Across all recorded sessions</span>
+        </div>
+        <div class="ai-kpi">
+          <span class="label">Minimum Target</span>
+          <span class="val">{{ tracker.threshold_pct }}%</span>
+          <span class="sub">Institutional policy threshold</span>
+        </div>
+      </div>
+
+      <div style="background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-sm); padding:12px 16px; font-size:13.5px; line-height:1.5;">
+        <strong>AI Assessment:</strong> {{ ai_report.executive_summary }}
+      </div>
+
+      <!-- Day-of-Week Behavioral Pattern Visualizer -->
+      <div style="margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px;">
+        <h3 style="font-size:14px; margin:0 0 4px; font-family:var(--font-display);">📅 Day-of-Week Behavioral Distribution</h3>
+        <p class="sub" style="margin:0 0 12px; font-size:12.5px;">Highlights recurring absenteeism hotspots across weekdays</p>
+        
+        <div class="weekday-grid">
+          {% for w in ai_report.weekday_patterns %}
+          <div class="weekday-card {{ 'slump' if w.is_slump else '' }}">
+            <span class="day-title">{{ w.day[:3] }}</span>
+            <span class="day-pct" style="color: {{ 'var(--crit)' if w.is_slump else 'var(--ink)' }};">
+              {{ w.pct }}{% if w.pct != 'N/A' %}%{% endif %}
+            </span>
+            {% if w.is_slump %}
+              <span class="slump-badge">⚠️ SLUMP</span>
+            {% else %}
+              <span style="font-family:var(--font-mono); font-size:10px; color:var(--ink-soft);">
+                {{ '+' if w.deviation > 0 else '' }}{{ w.deviation }}%
+              </span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Operations Copilot Box -->
+    <div class="copilot-box animate">
+      <div class="copilot-header">
+        <h3><span>🤖</span> TrackIQ AI Attendance Copilot</h3>
+        <span style="font-family:var(--font-mono); font-size:11.5px; color:#94A3B8;">Behavioral Decision Assistant</span>
+      </div>
+      <p style="color:#94A3B8; font-size:13.5px; margin:0 0 14px;">
+        Ask questions about member risk scores, tomorrow's turnout projections, or personalized retention interventions:
+      </p>
+
+      <div class="copilot-chips">
+        <button type="button" class="copilot-chip" onclick="askCopilot('Who is at highest risk of dropping out?')">🚨 At-Risk Members</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Analyze day-of-week attendance patterns')">📅 Weekday Analysis</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Predict tomorrow attendance')">🔮 Tomorrow's Forecast</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Suggest retention intervention plan')">💡 Retention Plan</button>
+      </div>
+
+      <form id="copilot-form" class="copilot-form" onsubmit="event.preventDefault(); submitCopilot();">
+        <input type="text" id="copilot-input" class="copilot-input" placeholder="e.g., Who has a deteriorating attendance streak this week?" autocomplete="off">
+        <button type="submit" id="copilot-submit-btn" class="copilot-btn">Ask AI</button>
+      </form>
+
+      <div id="copilot-response-area" style="display:none;" class="copilot-response">
+        <h4 id="copilot-response-title">AI Analysis</h4>
+        <div id="copilot-response-body"></div>
+        <div id="copilot-actions-area" class="copilot-actions" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- High-level Stats Grid -->
+    <div class="stat-grid" style="margin-top:24px;">
+      <div class="stat-card"><div class="label">📊 Cohort Average</div><div class="num">{{ report.overall_pct if report.overall_pct is not none else '—' }}%</div></div>
+      <div class="stat-card crit"><div class="label">⚠️ Below Policy Threshold</div><div class="num" id="warn-count">{{ report.below|length }}</div></div>
+      <div class="stat-card ok"><div class="label">✅ On Track</div><div class="num">{{ report.ok|length }}</div></div>
+      <div class="stat-card"><div class="label">📅 Sessions Recorded</div><div class="num">{{ report.days|length }}</div></div>
+    </div>
+
+    <div class="panel-actions" style="margin-bottom: 24px; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);">Export includes AI Risk Scores &amp; Prescriptive Interventions</span>
+      <a href="{{ url_for('attendance_download', tracker_id=tracker.id) }}" class="btn-secondary">⬇ Download AI Report (CSV)</a>
+    </div>
+
+    <!-- Mark Attendance for Today Form -->
+    <div class="card animate">
+      <h2>✅ Mark Attendance for {{ today }}</h2>
+      <p class="sub">Check members who are present today; AI behavioral models update immediately upon saving.</p>
+      <form action="{{ url_for('attendance_mark', tracker_id=tracker.id) }}" method="post">
+        <input type="hidden" name="date" value="{{ today }}">
+        <div class="mark-list">
+          {% for m in tracker.members %}
+          <label class="mark-item">
+            <input type="checkbox" name="present_{{ m.id }}" {{ 'checked' if today_marked.get(m.id) }}>
+            <span class="name">{{ m.name }}</span>
+            {% if m.group %}<span class="group-tag">{{ m.group }}</span>{% endif %}
+          </label>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn-primary" style="background:var(--ink); margin-top:20px;">💾 Save Attendance &amp; Update AI Models</button>
+      </form>
+    </div>
+
+    {% if report.alerts %}
+    <div class="card animate">
+      <h2>🚨 Policy &amp; Absenteeism Alerts</h2>
+      <p class="sub">Generated from attendance % vs. threshold and high single-day absenteeism</p>
+      <div class="alert-panel">
+        {% for a in report.alerts %}
+        <div class="alert-card {{ a.severity }}" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+          <span class="icon">{{ '🚫' if a.severity == 'critical' else '⚠️' }}</span>
+          <div class="text">{{ a.message }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Member Attendance & Predictive Risk Matrix -->
+    <div class="card animate">
+      <h2>👥 Member Attendance &amp; AI Risk Matrix</h2>
+      <p class="sub">Evaluated by multi-factor machine learning risk scoring (trend velocity, absence streak, gap to policy).</p>
+
+      {% for s in report.stats %}
+      {% set pred = member_ai_map.get(s.member.id, {}) %}
+      <div style="border-bottom: 1px solid var(--line); padding: 16px 0;">
+        <div class="member-row-table" style="border-bottom:none; padding:0 0 10px 0;">
+          <div>
+            <div class="name" style="font-weight:700; font-size:15px;">{{ s.member.name }}</div>
+            {% if s.member.group %}
+              <div class="cat" style="font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);">{{ s.member.group }}</div>
+            {% endif %}
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill {{ 'healthy' if s.status == 'ok' else ('critical' if s.status == 'below' else '') }}"
+                 data-w="{{ s.pct or 0 }}%" style="width:0%; {% if s.status == 'no_data' %}background:var(--line);{% endif %}"></div>
+          </div>
+          <div class="qty-value">
+            <strong>{{ s.present }}/{{ s.total }}</strong> days
+            {% if s.pct is not none %} · {{ s.pct }}%{% endif %}
+          </div>
+          <div style="text-align:right;">
+            <span class="status-pill {{ s.status }}">{{ s.status.replace('_',' ') }}</span>
+          </div>
+        </div>
+
+        <!-- AI Predictive Intelligence Sub-Row -->
+        <div style="background:var(--paper); padding:10px 14px; border-radius:var(--radius-sm); font-size:12.5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span><strong>AI Risk Score:</strong> {{ pred.risk_score }}/100</span>
+            <span>·</span>
+            <span><strong>Trend:</strong> {{ pred.trend_icon }}</span>
+            {% if pred.consecutive_absences > 0 %}
+              <span>·</span>
+              <span style="color:var(--crit); font-weight:600;">{{ pred.consecutive_absences }} consecutive absence(s)</span>
+            {% endif %}
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="risk-tag {{ pred.risk_tier.lower() }}">AI Risk: {{ pred.risk_tier }}</span>
+          </div>
+        </div>
+
+        <div style="margin-top:8px; font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">
+          <span>💡 <strong>Recommendation:</strong></span>
+          <span>{{ pred.recommendation }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Daily Trend Visualizer -->
+    {% if report.days|length > 1 %}
+    <div class="card animate">
+      <h2>📈 Chronological Absenteeism Rate History</h2>
+      <p class="sub">% absent per recorded day across the tracking cycle</p>
+      <div class="trend-row">
+        {% for d in report.days %}
+        <div class="trend-bar">
+          <div class="date" style="order:2;">{{ d.absent_pct }}%</div>
+          <div class="bar {{ 'bad' if d.absent_pct >= 30 else 'good' }}" data-h="{{ (d.absent_pct / 100 * 80)|round|int }}px" style="height:0px; order:1;"></div>
+          <div class="date" style="order:3;">{{ d.date[5:] }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </main>
+
+  {% include "_footer.html" %}
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-w]').forEach(el => {
+        const w = el.dataset.w;
+        requestAnimationFrame(() => setTimeout(() => { el.style.width = w; }, 150));
+      });
+      document.querySelectorAll('[data-h]').forEach(el => {
+        const h = el.dataset.h;
+        requestAnimationFrame(() => setTimeout(() => { el.style.height = h; }, 150));
+      });
+    });
+
+    // AI Copilot Integration
+    function askCopilot(query) {
+      document.getElementById('copilot-input').value = query;
+      submitCopilot();
+    }
+
+    function submitCopilot() {
+      const input = document.getElementById('copilot-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const btn = document.getElementById('copilot-submit-btn');
+      const area = document.getElementById('copilot-response-area');
+      const titleEl = document.getElementById('copilot-response-title');
+      const bodyEl = document.getElementById('copilot-response-body');
+      const actionsEl = document.getElementById('copilot-actions-area');
+
+      btn.disabled = true;
+      btn.textContent = 'Thinking...';
+      area.style.display = 'block';
+      titleEl.textContent = 'Analyzing behavioral patterns...';
+      bodyEl.innerHTML = '<span style="color:#94A3B8;">Evaluating multi-factor risk scores and weekday distributions...</span>';
+      actionsEl.style.display = 'none';
+      actionsEl.innerHTML = '';
+
+      fetch("{{ url_for('attendance_ai_copilot', tracker_id=tracker.id) }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query })
+      })
+      .then(res => res.json())
+      .then(data => {
+        titleEl.textContent = data.title || "AI Response";
+        
+        let formatted = data.answer || "";
+        formatted = formatted.replace(/\n\n/g, '<br><br>');
+        formatted = formatted.replace(/\n- /g, '<br>• ');
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        if (formatted.includes('|')) {
+          const lines = (data.answer || '').split('\n').filter(l => l.trim().startsWith('|'));
+          if (lines.length >= 2) {
+            let htmlTable = '<table>';
+            lines.forEach((l, idx) => {
+              if (l.includes(':---') || l.includes('---:')) return;
+              const cells = l.split('|').filter((c, i, a) => i > 0 && i < a.length - 1).map(c => c.trim());
+              const tag = (idx === 0) ? 'th' : 'td';
+              htmlTable += '<tr>' + cells.map(c => `<${tag}>${c.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</${tag}>`).join('') + '</tr>';
+            });
+            htmlTable += '</table>';
+            formatted = formatted.split('|')[0] + htmlTable;
+          }
+        }
+
+        bodyEl.innerHTML = formatted;
+
+        if (data.action_items && data.action_items.length > 0) {
+          actionsEl.style.display = 'flex';
+          actionsEl.innerHTML = '<strong style="color:#67E8F9; font-size:12px; margin-bottom:4px;">RECOMMENDED ACTIONS:</strong>';
+          data.action_items.forEach(act => {
+            actionsEl.innerHTML += `<div class="copilot-action-item"><span>⚡</span><span>${act}</span></div>`;
+          });
+        }
+      })
+      .catch(err => {
+        titleEl.textContent = "Error";
+        bodyEl.innerHTML = '<span style="color:#F87171;">Failed to connect to the AI service. Please try again.</span>';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Ask AI';
+      });
+    }
+
+    function pollAlerts() {
+      fetch("{{ url_for('attendance_alerts_json', tracker_id=tracker.id) }}")
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('warn-count').textContent = data.critical + data.warning;
+          document.getElementById('checked-at').textContent = data.checked_at;
+        }).catch(() => {});
+    }
+    setInterval(pollAlerts, 15000);
+  </script>
+</body>
+</html>

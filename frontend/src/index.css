@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-main: #F7F6F2;
+  --bg-sidebar: #192A27;
+  --bg-sidebar-hover: #223733;
+  --bg-sidebar-active: #2B4540;
+  
+  --accent-primary: #39745B;
+  --accent-primary-hover: #2E5E4A;
+  --accent-secondary: #DCE9DF;
+  --accent-secondary-border: #C4D9C8;
+
+  --status-warn: #D99A32;
+  --status-warn-bg: #FDF6EB;
+  --status-warn-border: #F5DEB4;
+
+  --status-crit: #C85C52;
+  --status-crit-bg: #FAF0EE;
+  --status-crit-border: #F2CCC7;
+
+  --status-ok: #39745B;
+  --status-ok-bg: #EDF4F0;
+  --status-ok-border: #D1E3D7;
+
+  --text-primary: #202824;
+  --text-secondary: #777F79;
+  --text-muted: #9BA39D;
+  --text-on-dark: #EDF3F0;
+  --text-on-dark-muted: #8FA29B;
+
+  --card-bg: #FFFFFF;
+  --card-border: #E8EBE8;
+  --card-border-subtle: #F0F2EF;
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D2D8D4;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B6C0B9;
+}
+
+/* Editorial Headline Typography */
+.editorial-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.mono-metric {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-enter {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

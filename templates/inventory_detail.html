@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ tracker.name }} — TrackIQ-AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include "_header.html" %}
+
+  <main class="wrap">
+    <div style="margin: 24px 0 4px;"><a href="{{ url_for('inventory_dashboard') }}" class="btn-secondary">← All inventory trackers</a></div>
+
+    <section style="padding: 20px 0 10px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <h1 style="font-family:var(--font-display); font-size:30px; font-weight:800; margin:0;">📦 {{ tracker.name }}</h1>
+          <span class="ai-header-badge">AI Predictive Mode</span>
+        </div>
+        <p style="color:var(--ink-soft); margin:0;">{{ report.total_items }} monitored items · {{ report.total_units }} total units · Predictive horizons active</p>
+      </div>
+      <span class="live-pill" id="live-pill"><span class="live-dot"></span> Live AI Telemetry · <span id="checked-at">synced</span></span>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:16px;">✅ {{ msg }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+
+    <!-- AI Predictive Mission Control Card -->
+    <div class="card ai-card animate" style="margin-top: 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h2 style="font-size:18px; margin:0 0 4px; display:flex; align-items:center; gap:8px;">
+            <span>🧠</span> Predictive Stockout &amp; Demand Intelligence
+          </h2>
+          <p class="sub" style="margin:0;">Continuous velocity modeling, self-tuning safety stock buffers, and transaction anomaly audits.</p>
+        </div>
+        <span class="status-pill {{ 'healthy' if ai_report.inventory_health_score >= 75 else ('warning' if ai_report.inventory_health_score >= 50 else 'critical') }}">
+          Health Index: {{ ai_report.inventory_health_score }}/100
+        </span>
+      </div>
+
+      <div class="ai-kpi-grid">
+        <div class="ai-kpi">
+          <span class="label">Inventory Health Score</span>
+          <span class="val {{ 'ok' if ai_report.inventory_health_score >= 75 else ('warn' if ai_report.inventory_health_score >= 50 else 'crit') }}">
+            {{ ai_report.inventory_health_score }}<span style="font-size:14px; font-weight:500; color:var(--ink-soft);">/100</span>
+          </span>
+          <span class="sub">Weighted risk across all SKUs</span>
+        </div>
+        <div class="ai-kpi">
+          <span class="label">Imminent Stockouts (≤5d)</span>
+          <span class="val {{ 'crit' if ai_report.high_risk_count > 0 else 'ok' }}">
+            {{ ai_report.high_risk_count }}
+          </span>
+          <span class="sub">Require prompt replenishment</span>
+        </div>
+        <div class="ai-kpi">
+          <span class="label">Consumption Anomalies</span>
+          <span class="val {{ 'warn' if ai_report.total_anomalies > 0 else 'ok' }}">
+            {{ ai_report.total_anomalies }}
+          </span>
+          <span class="sub">Statistically unusual drain surges</span>
+        </div>
+        <div class="ai-kpi">
+          <span class="label">Standard Lead Time</span>
+          <span class="val">{{ ai_report.lead_time_days }} days</span>
+          <span class="sub">Dynamic buffer target</span>
+        </div>
+      </div>
+
+      <div style="background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-sm); padding:12px 16px; font-size:13.5px; line-height:1.5;">
+        <strong>AI Executive Assessment:</strong> {{ ai_report.executive_summary }}
+      </div>
+    </div>
+
+    <!-- AI Copilot Interactive Query Interface -->
+    <div class="copilot-box animate">
+      <div class="copilot-header">
+        <h3><span>🤖</span> TrackIQ AI Operations Copilot</h3>
+        <span style="font-family:var(--font-mono); font-size:11.5px; color:#94A3B8;">NLP Predictive Assistant</span>
+      </div>
+      <p style="color:#94A3B8; font-size:13.5px; margin:0 0 14px;">
+        Ask plain-English questions about stockout horizons, automated purchase requisitions, or demand anomalies:
+      </p>
+
+      <div class="copilot-chips">
+        <button type="button" class="copilot-chip" onclick="askCopilot('Which items will run out first?')">🔮 Runout Horizons</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Draft purchase order requisition')">📋 Draft PO Requisition</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Check for consumption anomalies')">⚠️ Audit Anomalies</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Optimize safety stock thresholds')">📈 Optimize Thresholds</button>
+      </div>
+
+      <form id="copilot-form" class="copilot-form" onsubmit="event.preventDefault(); submitCopilot();">
+        <input type="text" id="copilot-input" class="copilot-input" placeholder="e.g., Which items are in danger of running out this week?" autocomplete="off">
+        <button type="submit" id="copilot-submit-btn" class="copilot-btn">Ask AI</button>
+      </form>
+
+      <div id="copilot-response-area" style="display:none;" class="copilot-response">
+        <h4 id="copilot-response-title">AI Analysis</h4>
+        <div id="copilot-response-body"></div>
+        <div id="copilot-actions-area" class="copilot-actions" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Standard Threshold Stat Grid -->
+    <div class="stat-grid" style="margin-top:24px;">
+      <div class="stat-card crit"><div class="label">🚫 Out of stock</div><div class="num" id="crit-count">{{ report.critical|length }}</div></div>
+      <div class="stat-card warn"><div class="label">⚠️ Low stock</div><div class="num" id="warn-count">{{ report.warning|length }}</div></div>
+      <div class="stat-card ok"><div class="label">✅ Healthy stock</div><div class="num">{{ report.healthy|length }}</div></div>
+      <div class="stat-card"><div class="label">📦 Total units</div><div class="num">{{ report.total_units }}</div></div>
+    </div>
+
+    <div class="panel-actions" style="margin-bottom: 24px; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);">Export includes AI Burn Rates &amp; Safety Stock values</span>
+      <a href="{{ url_for('inventory_download', tracker_id=tracker.id) }}" class="btn-secondary">⬇ Download AI Report (CSV)</a>
+    </div>
+
+    {% if report.alerts %}
+    <div class="card animate">
+      <h2>🚨 Threshold Alerts</h2>
+      <p class="sub">Generated from real-time stock levels vs. user reorder thresholds</p>
+      <div class="alert-panel">
+        {% for a in report.alerts %}
+        <div class="alert-card {{ a.severity }}" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+          <span class="icon">{{ '🚫' if a.severity == 'critical' else '⚠️' }}</span>
+          <div class="text">{{ a.message }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Stock Levels with AI Predictive Metrics -->
+    <div class="card animate">
+      <h2>📊 Real-Time Stock &amp; AI Depletion Horizons</h2>
+      <p class="sub">Adjust quantities as items move; burn rates and stockout horizons recalculate instantly.</p>
+
+      {% for item in tracker.products %}
+      {% set f = ai_forecasts_map.get(item.id, {}) %}
+      {% set pct = (item.quantity / (item.threshold * 2 if item.threshold > 0 else (item.quantity if item.quantity > 0 else 1)) * 100) %}
+      {% set status = 'critical' if item.quantity <= 0 else ('warning' if item.quantity <= item.threshold else 'healthy') %}
+      
+      <div style="border-bottom: 1px solid var(--line); padding: 16px 0;">
+        <div class="item-row" style="border-bottom:none; padding:0 0 10px 0;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="name" style="font-weight:700;">{{ item.name }}</span>
+              {% if f.anomalies %}
+                <span class="risk-tag critical" title="Unusual consumption spike detected">⚡ Anomaly</span>
+              {% endif %}
+            </div>
+            {% if item.category %}<div class="cat">{{ item.category }}</div>{% endif %}
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill {{ status }}" data-w="{{ [pct, 100]|min }}%" style="width:0%;"></div>
+          </div>
+          <div class="qty-value">
+            <strong>{{ item.quantity }}</strong> / {{ item.threshold }} {{ item.unit }}
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
+            <span class="status-pill {{ status }}">{{ status }}</span>
+          </div>
+        </div>
+
+        <!-- AI Forecast Intelligence Sub-Row -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--paper); padding:8px 14px; border-radius:var(--radius-sm); font-size:12.5px; margin-bottom:10px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span><strong>Burn Velocity:</strong> ~{{ f.daily_burn_rate }} {{ item.unit }}/day</span>
+            <span>·</span>
+            <span><strong>Dynamic ROP:</strong> {{ f.dynamic_rop }} {{ item.unit }} (Safety: {{ f.dynamic_safety_stock }})</span>
+            {% if f.threshold_status == 'too_low' %}
+              <span style="color:var(--crit); font-weight:600;">(⚠️ Manual threshold is too tight)</span>
+            {% endif %}
+          </div>
+
+          <div>
+            {% if f.risk_tier == 'CRITICAL' %}
+              <span class="burn-pill critical">🚨 0 Stock: {{ f.days_until_stockout }}d left ({{ f.stockout_date }})</span>
+            {% elif f.risk_tier == 'HIGH' %}
+              <span class="burn-pill high">⚡ Runout: ~{{ f.days_until_stockout }}d left ({{ f.stockout_date }})</span>
+            {% elif f.risk_tier == 'MODERATE' %}
+              <span class="burn-pill moderate">🟡 Runout: ~{{ f.days_until_stockout }}d left</span>
+            {% else %}
+              <span class="burn-pill stable">✅ Reserve Stable (>14d)</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Adjustment Buttons -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <span style="font-size:12px; color:var(--ink-soft); font-family:var(--font-mono);">
+            Suggested order if replenishing: <strong>{{ f.recommended_order_qty }} {{ item.unit }}</strong>
+          </span>
+          <div style="display:flex; gap:6px;">
+            <form action="{{ url_for('inventory_adjust', tracker_id=tracker.id) }}" method="post" style="display:inline;">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="delta" value="-5">
+              <button type="submit" class="btn-mini minus" title="Remove 5">−5</button>
+            </form>
+            <form action="{{ url_for('inventory_adjust', tracker_id=tracker.id) }}" method="post" style="display:inline;">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="delta" value="-1">
+              <button type="submit" class="btn-mini minus" title="Remove 1">−</button>
+            </form>
+            <form action="{{ url_for('inventory_adjust', tracker_id=tracker.id) }}" method="post" style="display:inline;">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="delta" value="1">
+              <button type="submit" class="btn-mini plus" title="Add 1">+</button>
+            </form>
+            <form action="{{ url_for('inventory_adjust', tracker_id=tracker.id) }}" method="post" style="display:inline;">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="delta" value="5">
+              <button type="submit" class="btn-mini plus" title="Add 5">+5</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <form action="{{ url_for('inventory_add_item', tracker_id=tracker.id) }}" method="post" style="margin-top:20px; border-top:1px solid var(--line); padding-top:20px;">
+        <h3 style="font-size:16px; margin:0 0 14px;">+ Register New Inventory Item</h3>
+        <div class="field-grid">
+          <div class="field"><label>Item name</label><input type="text" name="name" placeholder="e.g. Raspberry Pi 5" required></div>
+          <div class="field"><label>Category</label><input type="text" name="category" placeholder="e.g. Microcontrollers"></div>
+        </div>
+        <div class="field-grid">
+          <div class="field"><label>Starting quantity</label><input type="text" name="quantity" placeholder="20"></div>
+          <div class="field"><label>Reorder threshold</label><input type="text" name="threshold" placeholder="5"></div>
+        </div>
+        <div class="field"><label>Unit</label><input type="text" name="unit" placeholder="units"></div>
+        <button type="submit" class="btn-add">+ Add item to AI predictive tracker</button>
+      </form>
+    </div>
+
+    <!-- Recent Logs -->
+    {% if report.recent_log %}
+    <div class="card animate">
+      <h2>🕒 Real-Time Ingestion Logs</h2>
+      <p class="sub">Raw transactions used for velocity calculations and anomaly detection</p>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        {% for l in report.recent_log %}
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:10px 0; border-bottom:1px solid var(--line);">
+          <div>
+            <strong>{{ l.item_name }}</strong>: 
+            <span style="font-weight:700; color:{{ 'var(--crit)' if l.change < 0 else 'var(--ok)' }};">
+              {{ '+' if l.change > 0 else '' }}{{ l.change }}
+            </span> → now {{ l.new_quantity }}
+            {% if l.note %}<span style="color:var(--ink-soft); font-size:12px; margin-left:8px;">({{ l.note }})</span>{% endif %}
+          </div>
+          <span style="font-family:var(--font-mono); color:var(--ink-soft); font-size:11.5px;">{{ l.ts.strftime('%b %d, %I:%M %p') }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </main>
+
+  {% include "_footer.html" %}
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-w]').forEach(el => {
+        const w = el.dataset.w;
+        requestAnimationFrame(() => setTimeout(() => { el.style.width = w; }, 150));
+      });
+    });
+
+    // AI Copilot Integration
+    function askCopilot(query) {
+      document.getElementById('copilot-input').value = query;
+      submitCopilot();
+    }
+
+    function submitCopilot() {
+      const input = document.getElementById('copilot-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const btn = document.getElementById('copilot-submit-btn');
+      const area = document.getElementById('copilot-response-area');
+      const titleEl = document.getElementById('copilot-response-title');
+      const bodyEl = document.getElementById('copilot-response-body');
+      const actionsEl = document.getElementById('copilot-actions-area');
+
+      btn.disabled = true;
+      btn.textContent = 'Thinking...';
+      area.style.display = 'block';
+      titleEl.textContent = 'Analyzing inventory telemetry...';
+      bodyEl.innerHTML = '<span style="color:#94A3B8;">Running AI forecasting models...</span>';
+      actionsEl.style.display = 'none';
+      actionsEl.innerHTML = '';
+
+      fetch("{{ url_for('inventory_ai_copilot', tracker_id=tracker.id) }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query })
+      })
+      .then(res => res.json())
+      .then(data => {
+        titleEl.textContent = data.title || "AI Response";
+        
+        // Format markdown tables / bold text
+        let formatted = data.answer || "";
+        formatted = formatted.replace(/\n\n/g, '<br><br>');
+        formatted = formatted.replace(/\n- /g, '<br>• ');
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Simple markdown table parser for response
+        if (formatted.includes('|')) {
+          const lines = (data.answer || '').split('\n').filter(l => l.trim().startsWith('|'));
+          if (lines.length >= 2) {
+            let htmlTable = '<table>';
+            lines.forEach((l, idx) => {
+              if (l.includes(':---') || l.includes('---:')) return;
+              const cells = l.split('|').filter((c, i, a) => i > 0 && i < a.length - 1).map(c => c.trim());
+              const tag = (idx === 0) ? 'th' : 'td';
+              htmlTable += '<tr>' + cells.map(c => `<${tag}>${c.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</${tag}>`).join('') + '</tr>';
+            });
+            htmlTable += '</table>';
+            formatted = formatted.split('|')[0] + htmlTable;
+          }
+        }
+
+        bodyEl.innerHTML = formatted;
+
+        if (data.action_items && data.action_items.length > 0) {
+          actionsEl.style.display = 'flex';
+          actionsEl.innerHTML = '<strong style="color:#67E8F9; font-size:12px; margin-bottom:4px;">RECOMMENDED ACTIONS:</strong>';
+          data.action_items.forEach(act => {
+            actionsEl.innerHTML += `<div class="copilot-action-item"><span>⚡</span><span>${act}</span></div>`;
+          });
+        }
+      })
+      .catch(err => {
+        titleEl.textContent = "Error";
+        bodyEl.innerHTML = '<span style="color:#F87171;">Failed to connect to the AI service. Please try again.</span>';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Ask AI';
+      });
+    }
+
+    // Live alert count & AI metrics polling
+    function pollAlerts() {
+      fetch("{{ url_for('inventory_alerts_json', tracker_id=tracker.id) }}")
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('crit-count').textContent = data.critical;
+          document.getElementById('warn-count').textContent = data.warning;
+          document.getElementById('checked-at').textContent = data.checked_at;
+        }).catch(() => {});
+    }
+    setInterval(pollAlerts, 15000);
+  </script>
+</body>
+</html>

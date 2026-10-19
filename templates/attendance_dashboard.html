@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance — TrackIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include "_header.html" %}
+
+  <main class="wrap">
+    <section style="padding: 40px 0 10px;">
+      <h1 style="font-family:var(--font-display); font-size:32px; font-weight:800; margin:0 0 10px;">🧑‍🎓 Attendance trackers</h1>
+      <p style="color:var(--ink-soft); margin:0;">{{ trackers|length }} tracker{{ 's' if trackers|length != 1 else '' }} · live attendance % vs. minimum threshold</p>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:20px;">✅ {{ msg }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+
+    <div style="margin: 20px 0 26px;">
+      <a href="{{ url_for('attendance_new') }}" class="btn-primary" style="background:var(--ink);">+ New attendance tracker</a>
+    </div>
+
+    {% if trackers %}
+    <div class="tracker-list">
+      {% for t in trackers %}
+      {% set s = summaries[t.id] %}
+      {% set ai = ai_summaries.get(t.id, {}) %}
+      <div class="tracker-item" style="border-left: 4px solid var(--violet);">
+        <div class="icon">🧑‍🎓</div>
+        <div class="info">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="title">{{ t.name }}</div>
+            <span class="ai-header-badge" style="font-size:9.5px; padding:2px 7px;">AI Predictive</span>
+          </div>
+          <div class="meta">
+            {{ t.members|length }} members · Min {{ t.threshold_pct }}% req · Mean {{ s.overall_pct if s.overall_pct is not none else '—' }}% · Tomorrow forecast: <strong>{{ ai.get('forecast_pct', '—') }}%</strong>
+          </div>
+        </div>
+        {% if ai.get('critical_members_count', 0) > 0 %}
+          <span class="badge-count crit">⚠️ {{ ai.get('critical_members_count') }} at-risk member(s)</span>
+        {% elif s.below %}
+          <span class="badge-count crit">{{ s.below|length }} below threshold</span>
+        {% else %}
+          <span class="badge-count ok">All members healthy</span>
+        {% endif %}
+        <div class="actions">
+          <a href="{{ url_for('attendance_detail', tracker_id=t.id) }}" class="btn-primary" style="padding:7px 16px; font-size:12.5px; background:linear-gradient(135deg, var(--blue), var(--violet));">Open AI Dashboard →</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="card"><div class="empty-state">No attendance trackers yet — create one to start monitoring attendance.</div></div>
+    {% endif %}
+  </main>
+
+  {% include "_footer.html" %}
+</body>
+</html>

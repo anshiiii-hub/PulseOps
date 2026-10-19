@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New attendance tracker — TrackIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include "_header.html" %}
+
+  <main class="wrap">
+    <section style="padding: 40px 0 20px;">
+      <h1 style="font-family:var(--font-display); font-size:32px; font-weight:800; margin:0 0 10px;">🧑‍🎓 New attendance tracker</h1>
+      <p style="color:var(--ink-soft); margin:0;">Add your members and set a minimum attendance percentage — you'll get alerted the moment someone drops below it.</p>
+    </section>
+
+    <div class="card animate">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}{% for msg in messages %}<div class="flash">{{ msg }}</div>{% endfor %}{% endif %}
+      {% endwith %}
+
+      <form action="{{ url_for('attendance_create') }}" method="post">
+        <div class="field-grid">
+          <div class="field">
+            <label for="name">Tracker name</label>
+            <input type="text" id="name" name="name" placeholder="e.g. CS101 — Section B" required>
+          </div>
+          <div class="field">
+            <label for="threshold_pct">Minimum attendance %</label>
+            <input type="number" id="threshold_pct" name="threshold_pct" min="0" max="100" value="75" required>
+          </div>
+        </div>
+
+        <div class="col-label member">
+          <div></div><div>Member name</div><div>Group (optional)</div><div></div>
+        </div>
+        <div id="member-list">
+          <div class="dyn-row member-row">
+            <div class="badge"></div>
+            <input type="text" name="member_name" placeholder="e.g. Aisha Khan" required>
+            <input type="text" name="member_group" placeholder="e.g. Team A">
+            <button type="button" class="remove-row" onclick="removeRow(this,'member-list')">✕</button>
+          </div>
+          <div class="dyn-row member-row">
+            <div class="badge"></div>
+            <input type="text" name="member_name" placeholder="e.g. Marcus Lee" required>
+            <input type="text" name="member_group" placeholder="e.g. Team A">
+            <button type="button" class="remove-row" onclick="removeRow(this,'member-list')">✕</button>
+          </div>
+          <div class="dyn-row member-row">
+            <div class="badge"></div>
+            <input type="text" name="member_name" placeholder="e.g. Priya Nair" required>
+            <input type="text" name="member_group" placeholder="e.g. Team B">
+            <button type="button" class="remove-row" onclick="removeRow(this,'member-list')">✕</button>
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <button type="button" class="btn-add" onclick="addMember()">+ Add another member</button>
+          <button type="submit" class="btn-primary" style="background:var(--ink);">✨ Create tracker</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  {% include "_footer.html" %}
+
+  <script>
+    function addMember() {
+      const list = document.getElementById('member-list');
+      const row = document.createElement('div');
+      row.className = 'dyn-row member-row';
+      row.style.animation = 'fadeUp 0.4s ease both';
+      row.innerHTML = `
+        <div class="badge"></div>
+        <input type="text" name="member_name" placeholder="e.g. Jordan Alvarez" required>
+        <input type="text" name="member_group" placeholder="optional">
+        <button type="button" class="remove-row" onclick="removeRow(this,'member-list')">✕</button>
+      `;
+      list.appendChild(row);
+      row.querySelector('input').focus();
+    }
+    function removeRow(btn, listId) {
+      const list = document.getElementById(listId);
+      if (list.children.length <= 1) return;
+      const row = btn.closest('.dyn-row');
+      row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+      row.style.opacity = '0'; row.style.transform = 'translateX(-10px)';
+      setTimeout(() => row.remove(), 180);
+    }
+  </script>
+</body>
+</html>
