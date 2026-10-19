@@ -57,7 +57,13 @@ export const TopBar: React.FC<TopBarProps> = ({
       </div>
 
       {/* Center/Right Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {/* Creator Attribution */}
+        <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#F4F7F4] border border-[#E0E7E2] text-xs">
+          <span className="text-[#777F79]">Engineered by</span>
+          <span className="font-semibold text-[#2B6149]">Anshita Dawar</span>
+        </div>
+
         {/* Department / Unit Selector */}
         <div className="relative">
           <button

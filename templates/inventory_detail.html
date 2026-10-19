@@ -15,7 +15,7 @@
     <section style="padding: 20px 0 10px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;">
       <div>
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-          <h1 style="font-family:var(--font-display); font-size:30px; font-weight:800; margin:0;">📦 {{ tracker.name }}</h1>
+          <h1 style="font-family:var(--font-display); font-size:30px; font-weight:800; margin:0;"> {{ tracker.name }}</h1>
           <span class="ai-header-badge">AI Predictive Mode</span>
         </div>
         <p style="color:var(--ink-soft); margin:0;">{{ report.total_items }} monitored items · {{ report.total_units }} total units · Predictive horizons active</p>
@@ -24,7 +24,7 @@
     </section>
 
     {% with messages = get_flashed_messages() %}
-      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:16px;">✅ {{ msg }}</div>{% endfor %}{% endif %}
+      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:16px;"> {{ msg }}</div>{% endfor %}{% endif %}
     {% endwith %}
 
     <!-- AI Predictive Mission Control Card -->
@@ -32,7 +32,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
           <h2 style="font-size:18px; margin:0 0 4px; display:flex; align-items:center; gap:8px;">
-            <span>🧠</span> Predictive Stockout &amp; Demand Intelligence
+            <span></span> Predictive Stockout &amp; Demand Intelligence
           </h2>
           <p class="sub" style="margin:0;">Continuous velocity modeling, self-tuning safety stock buffers, and transaction anomaly audits.</p>
         </div>
@@ -78,7 +78,7 @@
     <!-- AI Copilot Interactive Query Interface -->
     <div class="copilot-box animate">
       <div class="copilot-header">
-        <h3><span>🤖</span> TrackIQ AI Operations Copilot</h3>
+        <h3><span></span> TrackIQ AI Operations Copilot</h3>
         <span style="font-family:var(--font-mono); font-size:11.5px; color:#94A3B8;">NLP Predictive Assistant</span>
       </div>
       <p style="color:#94A3B8; font-size:13.5px; margin:0 0 14px;">
@@ -86,10 +86,10 @@
       </p>
 
       <div class="copilot-chips">
-        <button type="button" class="copilot-chip" onclick="askCopilot('Which items will run out first?')">🔮 Runout Horizons</button>
-        <button type="button" class="copilot-chip" onclick="askCopilot('Draft purchase order requisition')">📋 Draft PO Requisition</button>
-        <button type="button" class="copilot-chip" onclick="askCopilot('Check for consumption anomalies')">⚠️ Audit Anomalies</button>
-        <button type="button" class="copilot-chip" onclick="askCopilot('Optimize safety stock thresholds')">📈 Optimize Thresholds</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Which items will run out first?')"> Runout Horizons</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Draft purchase order requisition')"> Draft PO Requisition</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Check for consumption anomalies')">️ Audit Anomalies</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Optimize safety stock thresholds')"> Optimize Thresholds</button>
       </div>
 
       <form id="copilot-form" class="copilot-form" onsubmit="event.preventDefault(); submitCopilot();">
@@ -106,10 +106,10 @@
 
     <!-- Standard Threshold Stat Grid -->
     <div class="stat-grid" style="margin-top:24px;">
-      <div class="stat-card crit"><div class="label">🚫 Out of stock</div><div class="num" id="crit-count">{{ report.critical|length }}</div></div>
-      <div class="stat-card warn"><div class="label">⚠️ Low stock</div><div class="num" id="warn-count">{{ report.warning|length }}</div></div>
-      <div class="stat-card ok"><div class="label">✅ Healthy stock</div><div class="num">{{ report.healthy|length }}</div></div>
-      <div class="stat-card"><div class="label">📦 Total units</div><div class="num">{{ report.total_units }}</div></div>
+      <div class="stat-card crit"><div class="label"> Out of stock</div><div class="num" id="crit-count">{{ report.critical|length }}</div></div>
+      <div class="stat-card warn"><div class="label">️ Low stock</div><div class="num" id="warn-count">{{ report.warning|length }}</div></div>
+      <div class="stat-card ok"><div class="label"> Healthy stock</div><div class="num">{{ report.healthy|length }}</div></div>
+      <div class="stat-card"><div class="label"> Total units</div><div class="num">{{ report.total_units }}</div></div>
     </div>
 
     <div class="panel-actions" style="margin-bottom: 24px; display:flex; justify-content:space-between; align-items:center;">
@@ -119,12 +119,12 @@
 
     {% if report.alerts %}
     <div class="card animate">
-      <h2>🚨 Threshold Alerts</h2>
+      <h2> Threshold Alerts</h2>
       <p class="sub">Generated from real-time stock levels vs. user reorder thresholds</p>
       <div class="alert-panel">
         {% for a in report.alerts %}
         <div class="alert-card {{ a.severity }}" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
-          <span class="icon">{{ '🚫' if a.severity == 'critical' else '⚠️' }}</span>
+          <span class="icon">{{ '' if a.severity == 'critical' else '️' }}</span>
           <div class="text">{{ a.message }}</div>
         </div>
         {% endfor %}
@@ -134,7 +134,7 @@
 
     <!-- Stock Levels with AI Predictive Metrics -->
     <div class="card animate">
-      <h2>📊 Real-Time Stock &amp; AI Depletion Horizons</h2>
+      <h2> Real-Time Stock &amp; AI Depletion Horizons</h2>
       <p class="sub">Adjust quantities as items move; burn rates and stockout horizons recalculate instantly.</p>
 
       {% for item in tracker.products %}
@@ -148,7 +148,7 @@
             <div style="display:flex; align-items:center; gap:8px;">
               <span class="name" style="font-weight:700;">{{ item.name }}</span>
               {% if f.anomalies %}
-                <span class="risk-tag critical" title="Unusual consumption spike detected">⚡ Anomaly</span>
+                <span class="risk-tag critical" title="Unusual consumption spike detected"> Anomaly</span>
               {% endif %}
             </div>
             {% if item.category %}<div class="cat">{{ item.category }}</div>{% endif %}
@@ -171,19 +171,19 @@
             <span>·</span>
             <span><strong>Dynamic ROP:</strong> {{ f.dynamic_rop }} {{ item.unit }} (Safety: {{ f.dynamic_safety_stock }})</span>
             {% if f.threshold_status == 'too_low' %}
-              <span style="color:var(--crit); font-weight:600;">(⚠️ Manual threshold is too tight)</span>
+              <span style="color:var(--crit); font-weight:600;">(️ Manual threshold is too tight)</span>
             {% endif %}
           </div>
 
           <div>
             {% if f.risk_tier == 'CRITICAL' %}
-              <span class="burn-pill critical">🚨 0 Stock: {{ f.days_until_stockout }}d left ({{ f.stockout_date }})</span>
+              <span class="burn-pill critical"> 0 Stock: {{ f.days_until_stockout }}d left ({{ f.stockout_date }})</span>
             {% elif f.risk_tier == 'HIGH' %}
-              <span class="burn-pill high">⚡ Runout: ~{{ f.days_until_stockout }}d left ({{ f.stockout_date }})</span>
+              <span class="burn-pill high"> Runout: ~{{ f.days_until_stockout }}d left ({{ f.stockout_date }})</span>
             {% elif f.risk_tier == 'MODERATE' %}
-              <span class="burn-pill moderate">🟡 Runout: ~{{ f.days_until_stockout }}d left</span>
+              <span class="burn-pill moderate"> Runout: ~{{ f.days_until_stockout }}d left</span>
             {% else %}
-              <span class="burn-pill stable">✅ Reserve Stable (>14d)</span>
+              <span class="burn-pill stable"> Reserve Stable (>14d)</span>
             {% endif %}
           </div>
         </div>
@@ -237,7 +237,7 @@
     <!-- Recent Logs -->
     {% if report.recent_log %}
     <div class="card animate">
-      <h2>🕒 Real-Time Ingestion Logs</h2>
+      <h2> Real-Time Ingestion Logs</h2>
       <p class="sub">Raw transactions used for velocity calculations and anomaly detection</p>
       <div style="display:flex; flex-direction:column; gap:8px;">
         {% for l in report.recent_log %}
@@ -329,7 +329,7 @@
           actionsEl.style.display = 'flex';
           actionsEl.innerHTML = '<strong style="color:#67E8F9; font-size:12px; margin-bottom:4px;">RECOMMENDED ACTIONS:</strong>';
           data.action_items.forEach(act => {
-            actionsEl.innerHTML += `<div class="copilot-action-item"><span>⚡</span><span>${act}</span></div>`;
+            actionsEl.innerHTML += `<div class="copilot-action-item"><span></span><span>${act}</span></div>`;
           });
         }
       })

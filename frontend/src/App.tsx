@@ -225,6 +225,18 @@ export const App: React.FC = () => {
           {currentTab === 'settings' && (
             <SettingsView />
           )}
+
+          {/* Master Footer Attribution */}
+          <footer className="mt-14 pt-6 border-t border-[#E4E8E4] flex flex-col sm:flex-row items-center justify-between text-xs text-[#777F79] gap-3 pb-8">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-[#202824]">PulseOps</span>
+              <span>— Real-Time Operational Intelligence System</span>
+            </div>
+            <div>
+              <span>Designed and Developed by </span>
+              <span className="font-semibold text-[#39745B]">Anshita Dawar</span>
+            </div>
+          </footer>
         </main>
       </div>
 

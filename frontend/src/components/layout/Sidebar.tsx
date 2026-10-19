@@ -8,7 +8,6 @@ import {
   BarChart3, 
   Sliders, 
   Settings,
-  ShieldCheck,
   ChevronRight
 } from 'lucide-react';
 
@@ -58,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, activ
               PulseOps
             </div>
             <div className="text-[10px] font-mono tracking-widest text-[#8FA29B] uppercase">
-              Operational Intelligence
+              By Anshita Dawar
             </div>
           </div>
         </div>
@@ -96,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, activ
         })}
       </nav>
 
-      {/* Environment Status & User Footnote */}
+      {/* Environment Status & Creator Footnote */}
       <div className="p-4 border-t border-[#223733] bg-[#142320]">
         <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#223733]">
           <div className="flex items-center gap-2">
@@ -109,14 +108,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, activ
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#27403B] border border-[#3A5C55] flex items-center justify-center text-xs font-semibold text-[#DCE9DF]">
-            EV
+          <div className="w-8 h-8 rounded bg-[#39745B] border border-[#488A6E] flex items-center justify-center text-xs font-bold text-[#FFFFFF] shadow-xs">
+            AD
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-medium text-[#EDF3F0] truncate">Dr. Evelyn Vance</div>
-            <div className="text-[10px] text-[#7F948C] truncate">Lead Operations Admin</div>
+            <div className="text-xs font-semibold text-[#EDF3F0] truncate">Anshita Dawar</div>
+            <div className="text-[10px] font-mono text-[#8FA29B] truncate">Creator &amp; Lead Engineer</div>
           </div>
-          <ShieldCheck size={14} className="text-[#659A83]" />
         </div>
       </div>
     </aside>

@@ -11,7 +11,7 @@
 
   <main class="wrap">
     <section style="padding: 40px 0 20px;">
-      <h1 style="font-family:var(--font-display); font-size:32px; font-weight:800; margin:0 0 10px;">📦 New inventory tracker</h1>
+      <h1 style="font-family:var(--font-display); font-size:32px; font-weight:800; margin:0 0 10px;"> New inventory tracker</h1>
       <p style="color:var(--ink-soft); margin:0;">List your items and set a reorder threshold for each — you'll get alerted the moment stock drops to or below it.</p>
     </section>
 
@@ -36,7 +36,7 @@
             <input type="number" name="item_quantity" placeholder="qty" min="0" value="50">
             <input type="number" name="item_threshold" placeholder="alert at" min="0" value="10">
             <input type="text" name="item_unit" placeholder="units" value="boxes">
-            <button type="button" class="remove-row" onclick="removeRow(this,'row-list')">✕</button>
+            <button type="button" class="remove-row" onclick="removeRow(this,'row-list')"></button>
           </div>
           <div class="dyn-row">
             <div class="badge"></div>
@@ -44,13 +44,13 @@
             <input type="number" name="item_quantity" placeholder="qty" min="0" value="30">
             <input type="number" name="item_threshold" placeholder="alert at" min="0" value="8">
             <input type="text" name="item_unit" placeholder="units" value="pcs">
-            <button type="button" class="remove-row" onclick="removeRow(this,'row-list')">✕</button>
+            <button type="button" class="remove-row" onclick="removeRow(this,'row-list')"></button>
           </div>
         </div>
 
         <div class="panel-actions">
           <button type="button" class="btn-add" onclick="addRow()">+ Add another item</button>
-          <button type="submit" class="btn-primary" style="background:var(--ink);">✨ Create tracker</button>
+          <button type="submit" class="btn-primary" style="background:var(--ink);"> Create tracker</button>
         </div>
       </form>
     </div>
@@ -70,7 +70,7 @@
         <input type="number" name="item_quantity" placeholder="qty" min="0" value="20">
         <input type="number" name="item_threshold" placeholder="alert at" min="0" value="5">
         <input type="text" name="item_unit" placeholder="units" value="units">
-        <button type="button" class="remove-row" onclick="removeRow(this,'row-list')">✕</button>
+        <button type="button" class="remove-row" onclick="removeRow(this,'row-list')"></button>
       `;
       list.appendChild(row);
       row.querySelector('input').focus();

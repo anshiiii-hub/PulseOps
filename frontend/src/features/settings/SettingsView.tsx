@@ -38,11 +38,28 @@ export const SettingsView: React.FC = () => {
       </div>
 
       <form onSubmit={handleSave} className="space-y-6 text-xs">
-        {/* Section 1: Organization Profile */}
+        {/* Creator & Platform Origin */}
+        <div className="bg-[#FFFFFF] p-5 rounded-lg border border-[#E2E6E2] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[#39745B] text-[#FFFFFF] font-bold text-sm flex items-center justify-center border border-[#488A6E]">
+              AD
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-[#202824]">PulseOps Operational Intelligence</div>
+              <div className="text-xs text-[#777F79]">Autonomous inventory forecasting &amp; attendance telemetry engine</div>
+            </div>
+          </div>
+          <div className="text-left sm:text-right">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-[#777F79]">Engineered &amp; Developed By</div>
+            <div className="text-sm font-bold text-[#39745B]">Anshita Dawar</div>
+          </div>
+        </div>
+
+        {/* Section 1: Organization Entity */}
         <div className="bg-[#FFFFFF] p-6 rounded-lg border border-[#E2E6E2] space-y-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-[#202824] pb-2 border-b border-[#F0F2EF]">
             <Building2 size={16} className="text-[#39745B]" />
-            <span>Institutional Profile</span>
+            <span>Organization Entity &amp; Scope</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

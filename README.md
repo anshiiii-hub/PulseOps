@@ -1,5 +1,7 @@
 # PulseOps — Real-Time Operational Intelligence Platform
 
+> **Engineered & Designed by Anshita Dawar**
+
 PulseOps is an operational intelligence platform that monitors physical inventory quantities and human capital attendance in real time. It blends proactive machine learning, statistical demand forecasting, and an editorial, data-dense design system.
 
 The system shifts operations from **reactive threshold checks** to **predictive decision-making**, flagging critical stockouts and absenteeism patterns days ahead of operational failure.
@@ -74,7 +76,7 @@ The system shifts operations from **reactive threshold checks** to **predictive 
    - Print-friendly layout stylesheet.
 
 8. **System & Organization Settings:**
-   - Institutional profile configuration (Campus name, lead administrative email).
+   - Institutional organization configuration (Campus name, lead administrative email).
    - Global threshold baselines (Standard vendor lead time, default attendance target).
    - Automated escalation channels (Daily email summary, critical SMS dispatch).
 
@@ -143,3 +145,11 @@ Open **http://127.0.0.1:5005** in your browser.
 - `ai_engine.py`: Machine learning demand forecasting, dynamic safety stock, and absenteeism risk classifier.
 - `AI_PROJECT_SPECIFICATION.md`: Academic specification report with mathematical formulations.
 - `requirements.txt`: Python package requirements.
+ 
+---
+
+## Creator & Engineering Credits
+
+**PulseOps** was designed, architected, and developed by **Anshita Dawar**.
+- **Scope:** Real-Time Inventory & Attendance Operational Intelligence Platform.
+- **Focus Areas:** Time-Series Burn Velocity Forecasting, Dynamic Safety Stock Optimization, Statistical Absenteeism Risk Tiers, and High-Density Editorial UI Architecture.

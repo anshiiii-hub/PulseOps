@@ -11,12 +11,12 @@
 
   <main class="wrap">
     <section style="padding: 40px 0 10px;">
-      <h1 style="font-family:var(--font-display); font-size:32px; font-weight:800; margin:0 0 10px;">📦 Inventory trackers</h1>
+      <h1 style="font-family:var(--font-display); font-size:32px; font-weight:800; margin:0 0 10px;"> Inventory trackers</h1>
       <p style="color:var(--ink-soft); margin:0;">{{ trackers|length }} tracker{{ 's' if trackers|length != 1 else '' }} · live stock levels vs. reorder thresholds</p>
     </section>
 
     {% with messages = get_flashed_messages() %}
-      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:20px;">✅ {{ msg }}</div>{% endfor %}{% endif %}
+      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:20px;"> {{ msg }}</div>{% endfor %}{% endif %}
     {% endwith %}
 
     <div style="margin: 20px 0 26px;">
@@ -29,7 +29,7 @@
       {% set s = summaries[t.id] %}
       {% set ai = ai_summaries.get(t.id, {}) %}
       <div class="tracker-item" style="border-left: 4px solid var(--blue);">
-        <div class="icon">📦</div>
+        <div class="icon"></div>
         <div class="info">
           <div style="display:flex; align-items:center; gap:8px;">
             <div class="title">{{ t.name }}</div>
@@ -40,7 +40,7 @@
           </div>
         </div>
         {% if ai.get('high_risk_count', 0) > 0 %}
-          <span class="badge-count crit">⚡ {{ ai.get('high_risk_count') }} item(s) critical runout</span>
+          <span class="badge-count crit"> {{ ai.get('high_risk_count') }} item(s) critical runout</span>
         {% elif s.critical %}
           <span class="badge-count crit">{{ s.critical|length }} out of stock</span>
         {% elif s.warning %}

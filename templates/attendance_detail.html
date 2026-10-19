@@ -15,7 +15,7 @@
     <section style="padding: 20px 0 10px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;">
       <div>
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-          <h1 style="font-family:var(--font-display); font-size:30px; font-weight:800; margin:0;">🧑‍🎓 {{ tracker.name }}</h1>
+          <h1 style="font-family:var(--font-display); font-size:30px; font-weight:800; margin:0;">‍ {{ tracker.name }}</h1>
           <span class="ai-header-badge">AI Predictive Mode</span>
         </div>
         <p style="color:var(--ink-soft); margin:0;">{{ tracker.members|length }} members · Minimum threshold: {{ tracker.threshold_pct }}% · Predictive Risk Classifier active</p>
@@ -24,7 +24,7 @@
     </section>
 
     {% with messages = get_flashed_messages() %}
-      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:16px;">✅ {{ msg }}</div>{% endfor %}{% endif %}
+      {% if messages %}{% for msg in messages %}<div class="flash success" style="margin-top:16px;"> {{ msg }}</div>{% endfor %}{% endif %}
     {% endwith %}
 
     <!-- AI Behavioral & Risk Mission Control Card -->
@@ -32,7 +32,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
           <h2 style="font-size:18px; margin:0 0 4px; display:flex; align-items:center; gap:8px;">
-            <span>🧠</span> Predictive Risk &amp; Behavioral Intelligence
+            <span></span> Predictive Risk &amp; Behavioral Intelligence
           </h2>
           <p class="sub" style="margin:0;">Multi-factor disengagement scoring, day-of-week pattern mining, and tomorrow's forecast.</p>
         </div>
@@ -74,7 +74,7 @@
 
       <!-- Day-of-Week Behavioral Pattern Visualizer -->
       <div style="margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px;">
-        <h3 style="font-size:14px; margin:0 0 4px; font-family:var(--font-display);">📅 Day-of-Week Behavioral Distribution</h3>
+        <h3 style="font-size:14px; margin:0 0 4px; font-family:var(--font-display);"> Day-of-Week Behavioral Distribution</h3>
         <p class="sub" style="margin:0 0 12px; font-size:12.5px;">Highlights recurring absenteeism hotspots across weekdays</p>
         
         <div class="weekday-grid">
@@ -85,7 +85,7 @@
               {{ w.pct }}{% if w.pct != 'N/A' %}%{% endif %}
             </span>
             {% if w.is_slump %}
-              <span class="slump-badge">⚠️ SLUMP</span>
+              <span class="slump-badge">️ SLUMP</span>
             {% else %}
               <span style="font-family:var(--font-mono); font-size:10px; color:var(--ink-soft);">
                 {{ '+' if w.deviation > 0 else '' }}{{ w.deviation }}%
@@ -100,7 +100,7 @@
     <!-- AI Operations Copilot Box -->
     <div class="copilot-box animate">
       <div class="copilot-header">
-        <h3><span>🤖</span> TrackIQ AI Attendance Copilot</h3>
+        <h3><span></span> TrackIQ AI Attendance Copilot</h3>
         <span style="font-family:var(--font-mono); font-size:11.5px; color:#94A3B8;">Behavioral Decision Assistant</span>
       </div>
       <p style="color:#94A3B8; font-size:13.5px; margin:0 0 14px;">
@@ -108,10 +108,10 @@
       </p>
 
       <div class="copilot-chips">
-        <button type="button" class="copilot-chip" onclick="askCopilot('Who is at highest risk of dropping out?')">🚨 At-Risk Members</button>
-        <button type="button" class="copilot-chip" onclick="askCopilot('Analyze day-of-week attendance patterns')">📅 Weekday Analysis</button>
-        <button type="button" class="copilot-chip" onclick="askCopilot('Predict tomorrow attendance')">🔮 Tomorrow's Forecast</button>
-        <button type="button" class="copilot-chip" onclick="askCopilot('Suggest retention intervention plan')">💡 Retention Plan</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Who is at highest risk of dropping out?')"> At-Risk Members</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Analyze day-of-week attendance patterns')"> Weekday Analysis</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Predict tomorrow attendance')"> Tomorrow's Forecast</button>
+        <button type="button" class="copilot-chip" onclick="askCopilot('Suggest retention intervention plan')"> Retention Plan</button>
       </div>
 
       <form id="copilot-form" class="copilot-form" onsubmit="event.preventDefault(); submitCopilot();">
@@ -128,10 +128,10 @@
 
     <!-- High-level Stats Grid -->
     <div class="stat-grid" style="margin-top:24px;">
-      <div class="stat-card"><div class="label">📊 Cohort Average</div><div class="num">{{ report.overall_pct if report.overall_pct is not none else '—' }}%</div></div>
-      <div class="stat-card crit"><div class="label">⚠️ Below Policy Threshold</div><div class="num" id="warn-count">{{ report.below|length }}</div></div>
-      <div class="stat-card ok"><div class="label">✅ On Track</div><div class="num">{{ report.ok|length }}</div></div>
-      <div class="stat-card"><div class="label">📅 Sessions Recorded</div><div class="num">{{ report.days|length }}</div></div>
+      <div class="stat-card"><div class="label"> Cohort Average</div><div class="num">{{ report.overall_pct if report.overall_pct is not none else '—' }}%</div></div>
+      <div class="stat-card crit"><div class="label">️ Below Policy Threshold</div><div class="num" id="warn-count">{{ report.below|length }}</div></div>
+      <div class="stat-card ok"><div class="label"> On Track</div><div class="num">{{ report.ok|length }}</div></div>
+      <div class="stat-card"><div class="label"> Sessions Recorded</div><div class="num">{{ report.days|length }}</div></div>
     </div>
 
     <div class="panel-actions" style="margin-bottom: 24px; display:flex; justify-content:space-between; align-items:center;">
@@ -141,7 +141,7 @@
 
     <!-- Mark Attendance for Today Form -->
     <div class="card animate">
-      <h2>✅ Mark Attendance for {{ today }}</h2>
+      <h2> Mark Attendance for {{ today }}</h2>
       <p class="sub">Check members who are present today; AI behavioral models update immediately upon saving.</p>
       <form action="{{ url_for('attendance_mark', tracker_id=tracker.id) }}" method="post">
         <input type="hidden" name="date" value="{{ today }}">
@@ -154,18 +154,18 @@
           </label>
           {% endfor %}
         </div>
-        <button type="submit" class="btn-primary" style="background:var(--ink); margin-top:20px;">💾 Save Attendance &amp; Update AI Models</button>
+        <button type="submit" class="btn-primary" style="background:var(--ink); margin-top:20px;"> Save Attendance &amp; Update AI Models</button>
       </form>
     </div>
 
     {% if report.alerts %}
     <div class="card animate">
-      <h2>🚨 Policy &amp; Absenteeism Alerts</h2>
+      <h2> Policy &amp; Absenteeism Alerts</h2>
       <p class="sub">Generated from attendance % vs. threshold and high single-day absenteeism</p>
       <div class="alert-panel">
         {% for a in report.alerts %}
         <div class="alert-card {{ a.severity }}" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
-          <span class="icon">{{ '🚫' if a.severity == 'critical' else '⚠️' }}</span>
+          <span class="icon">{{ '' if a.severity == 'critical' else '️' }}</span>
           <div class="text">{{ a.message }}</div>
         </div>
         {% endfor %}
@@ -175,7 +175,7 @@
 
     <!-- Member Attendance & Predictive Risk Matrix -->
     <div class="card animate">
-      <h2>👥 Member Attendance &amp; AI Risk Matrix</h2>
+      <h2> Member Attendance &amp; AI Risk Matrix</h2>
       <p class="sub">Evaluated by multi-factor machine learning risk scoring (trend velocity, absence streak, gap to policy).</p>
 
       {% for s in report.stats %}
@@ -218,7 +218,7 @@
         </div>
 
         <div style="margin-top:8px; font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">
-          <span>💡 <strong>Recommendation:</strong></span>
+          <span> <strong>Recommendation:</strong></span>
           <span>{{ pred.recommendation }}</span>
         </div>
       </div>
@@ -228,7 +228,7 @@
     <!-- Daily Trend Visualizer -->
     {% if report.days|length > 1 %}
     <div class="card animate">
-      <h2>📈 Chronological Absenteeism Rate History</h2>
+      <h2> Chronological Absenteeism Rate History</h2>
       <p class="sub">% absent per recorded day across the tracking cycle</p>
       <div class="trend-row">
         {% for d in report.days %}
@@ -317,7 +317,7 @@
           actionsEl.style.display = 'flex';
           actionsEl.innerHTML = '<strong style="color:#67E8F9; font-size:12px; margin-bottom:4px;">RECOMMENDED ACTIONS:</strong>';
           data.action_items.forEach(act => {
-            actionsEl.innerHTML += `<div class="copilot-action-item"><span>⚡</span><span>${act}</span></div>`;
+            actionsEl.innerHTML += `<div class="copilot-action-item"><span></span><span>${act}</span></div>`;
           });
         }
       })
